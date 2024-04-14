@@ -81,18 +81,17 @@ func processedApiData() ([]ProcessedModel, error) {
 			},
 			Image: model.Image,
 		}
-		for _, model := range models {
-			for _, manufacturer := range manufatures {
-				if model.ManufacturerId == manufacturer.Id {
-					newModel.ManufacturerName = manufacturer.Name
-					break
-				}
+
+		for _, manufacturer := range manufatures {
+			if model.ManufacturerId == manufacturer.Id {
+				newModel.ManufacturerName = manufacturer.Name
+				break
 			}
-			for _, category := range categories {
-				if model.CategoryId == category.Id {
-					newModel.CategoryName = category.Name
-					break
-				}
+		}
+		for _, category := range categories {
+			if model.CategoryId == category.Id {
+				newModel.CategoryName = category.Name
+				break
 			}
 		}
 		processedModels = append(processedModels, newModel)
