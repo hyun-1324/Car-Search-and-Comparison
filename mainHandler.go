@@ -31,6 +31,9 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 		bannerData = modeldata[randomNumber]
 
+	} else if err != nil {
+		return
+
 	} else {
 		var Cookiedata CookieData
 		if err := json.Unmarshal([]byte(cookie.Value), &Cookiedata); err != nil {

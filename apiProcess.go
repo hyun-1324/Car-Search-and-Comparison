@@ -53,14 +53,17 @@ func processedApiData() ([]ProcessedModel, error) {
 	var processedModels []ProcessedModel
 	models, err := fetchModels()
 	if err != nil {
+		fmt.Println("fetchModel error")
 		return nil, err
 	}
 	manufatures, err := fetchManufacturers()
 	if err != nil {
+		fmt.Println("fetchManufacturer error")
 		return nil, err
 	}
 	categories, err := fetchCategory()
 	if err != nil {
+		fmt.Println("fetchCategory error")
 		return nil, err
 	}
 	for _, model := range models {
@@ -167,7 +170,7 @@ func fetchManufacturers() ([]ManufacturerApi, error) {
 }
 
 func fetchCategory() ([]CategoryApi, error) {
-	url := "https://localhost:3000/api/categories"
+	url := "http://localhost:3000/api/categories"
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -182,6 +185,7 @@ func fetchCategory() ([]CategoryApi, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		fmt.Println("fetchCategory response error")
 		return nil, fmt.Errorf("server returned non-200 status: %d", resp.StatusCode)
 	}
 
@@ -192,6 +196,7 @@ func fetchCategory() ([]CategoryApi, error) {
 
 	var categoryList []CategoryApi
 	if err := json.Unmarshal(responseData, &categoryList); err != nil {
+		fmt.Println("fetchcategory unmarshal error")
 		return nil, err
 	}
 
