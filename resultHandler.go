@@ -15,26 +15,41 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 	selectedCategory := r.FormValue("category")
 	carinfoforDisplay := findcarinformation(selectedManufacturer, selectedCategory)
 
+	addCookieFromAManufacturerAndCategoryinfo(w, r, selectedManufacturer, selectedCategory)
+
+	tmp1 := template.Must(template.ParseFiles("search_result.html"))
+	tmp1.Execute(w, carinfoforDisplay)
+
+}
+
+func findcarinformation(selectedManufacturer string, selectedCategory string) []ProcessedModel {
+	var carinfo []ProcessedModel
+	allCarsinfo, err := processedApiData()
+	if err != nil {
+		fmt.Println("Error parsing data")
+		return nil
+	}
+
+	for _, model := range allCarsinfo {
+		if model.ManufacturerName == selectedManufacturer && model.CategoryName == selectedCategory {
+			carinfo = append(carinfo, model)
+		}
+	}
+
+	for _, model := range allCarsinfo {
+		if model.ManufacturerName != selectedManufacturer && model.CategoryName == selectedCategory || model.ManufacturerName == selectedManufacturer && model.CategoryName != selectedCategory {
+			carinfo = append(carinfo, model)
+		}
+	}
+	return carinfo
+}
+
+func addCookieFromAManufacturerAndCategoryinfo(w http.ResponseWriter, r *http.Request, selectedManufacturer string, selectedCategory string) {
 	cookie, err := r.Cookie("searchData")
 	if err == http.ErrNoCookie {
-		emptycookie := CookieData{
-			Manufacturer: map[string]int{},
-			Category:     map[string]int{},
-		}
-		mashaledJson, err := json.Marshal(emptycookie)
-		if err != nil {
-			fmt.Println("Error unmarshaling cookie:", err)
-		}
+		makeanewcookie(w)
+		cookie, _ = r.Cookie("searchData")
 
-		encodedCookieValue := base64.StdEncoding.EncodeToString([]byte(mashaledJson))
-
-		http.SetCookie(w, &http.Cookie{
-			Name:  "searchData",
-			Value: encodedCookieValue,
-			Path:  "/",
-		})
-
-		http.Error(w, "Error parsing data", http.StatusBadRequest)
 	}
 
 	decodedcookievalue, err := base64.StdEncoding.DecodeString(cookie.Value)
@@ -81,29 +96,4 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 		Path:  "/",
 	})
 
-	tmp1 := template.Must(template.ParseFiles("search_result.html"))
-	tmp1.Execute(w, carinfoforDisplay)
-
-}
-
-func findcarinformation(selectedManufacturer string, selectedCategory string) []ProcessedModel {
-	var carinfo []ProcessedModel
-	allCarsinfo, err := processedApiData()
-	if err != nil {
-		fmt.Println("Error parsing data")
-		return nil
-	}
-
-	for _, model := range allCarsinfo {
-		if model.ManufacturerName == selectedManufacturer && model.CategoryName == selectedCategory {
-			carinfo = append(carinfo, model)
-		}
-	}
-
-	for _, model := range allCarsinfo {
-		if model.ManufacturerName != selectedManufacturer && model.CategoryName == selectedCategory || model.ManufacturerName == selectedManufacturer && model.CategoryName != selectedCategory {
-			carinfo = append(carinfo, model)
-		}
-	}
-	return carinfo
 }

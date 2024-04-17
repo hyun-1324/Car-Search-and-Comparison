@@ -5,7 +5,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
+
+var client = &http.Client{
+	Timeout: 30 * time.Second,
+}
 
 type ModelApi struct {
 	Id             int    `json:"id"`
@@ -35,12 +40,14 @@ type CategoryApi struct {
 }
 
 type ProcessedModel struct {
-	Id               int    `json:"id"`
-	Name             string `json:"name"`
-	ManufacturerName string `json:"manufacturerName"`
-	CategoryName     string `json:"categoryName"`
-	Year             int    `json:"year"`
-	Specifications   struct {
+	Id                       int    `json:"id"`
+	Name                     string `json:"name"`
+	ManufacturerName         string `json:"manufacturerName"`
+	ManufacturerCountry      string `json:"manufacturerCountry"`
+	ManufacturerFoundingYear int    `json:"manufacturerFoundingYear"`
+	CategoryName             string `json:"categoryName"`
+	Year                     int    `json:"year"`
+	Specifications           struct {
 		Engine       string `json:"engine"`
 		Horsepower   int    `json:"horsepower"`
 		Transmission string `json:"transmission"`
@@ -56,7 +63,7 @@ func processedApiData() ([]ProcessedModel, error) {
 		fmt.Println("fetchModel error")
 		return nil, err
 	}
-	manufatures, err := fetchManufacturers()
+	manufactures, err := fetchManufacturers()
 	if err != nil {
 		fmt.Println("fetchManufacturer error")
 		return nil, err
@@ -85,9 +92,11 @@ func processedApiData() ([]ProcessedModel, error) {
 			Image: model.Image,
 		}
 
-		for _, manufacturer := range manufatures {
+		for _, manufacturer := range manufactures {
 			if model.ManufacturerId == manufacturer.Id {
 				newModel.ManufacturerName = manufacturer.Name
+				newModel.ManufacturerCountry = manufacturer.Country
+				newModel.ManufacturerFoundingYear = manufacturer.FoundingYear
 				break
 			}
 		}
@@ -105,7 +114,6 @@ func processedApiData() ([]ProcessedModel, error) {
 
 func fetchModels() ([]ModelApi, error) {
 	url := "http://localhost:3000/api/models"
-	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -138,7 +146,6 @@ func fetchModels() ([]ModelApi, error) {
 
 func fetchManufacturers() ([]ManufacturerApi, error) {
 	url := "http://localhost:3000/api/manufacturers"
-	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -171,7 +178,6 @@ func fetchManufacturers() ([]ManufacturerApi, error) {
 
 func fetchCategory() ([]CategoryApi, error) {
 	url := "http://localhost:3000/api/categories"
-	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

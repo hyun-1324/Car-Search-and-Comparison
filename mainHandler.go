@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"math/rand"
 	"net/http"
@@ -10,13 +12,14 @@ import (
 
 type CookieData struct {
 	Manufacturer map[string]int `json:"manufacturer"`
-	Categories   map[string]int `json:"category"`
+	Category     map[string]int `json:"category"`
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 	var bannerData ProcessedModel
 	var manufacturerlist []string
 	var categorylist []string
+
 	modeldata, err := processedApiData()
 	if err != nil {
 		http.Error(w, "Error parsing data", http.StatusBadRequest)
@@ -27,25 +30,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie("searchData")
 	if err == http.ErrNoCookie {
+		makeanewcookie(w)
 		randomNumber := rand.Intn(10)
-
 		bannerData = modeldata[randomNumber]
-
-	} else if err != nil {
-		return
-
 	} else {
-		var Cookiedata CookieData
-		if err := json.Unmarshal([]byte(cookie.Value), &Cookiedata); err != nil {
-			http.Error(w, "Error parsing data", http.StatusBadRequest)
-		}
-		mostSearchedManufacturer, manufacturerSearchnum := maxCookiedataKey(Cookiedata.Manufacturer)
-		mostSearchedCategory, categorySearchnum := maxCookiedataKey(Cookiedata.Categories)
-
-		bannerData, err = findMostSearchedData(mostSearchedManufacturer, mostSearchedCategory, manufacturerSearchnum, categorySearchnum)
-		if err != nil {
-			http.Error(w, "Error parsing data", http.StatusBadRequest)
-		}
+		bannerData = getBannerdataFromCookie(w, cookie)
 	}
 
 	tmp1 := template.Must(template.ParseFiles("index.html"))
@@ -158,4 +147,47 @@ func findMostSearchedData(mostSearchedManufacturer string, mostSearchedCategory 
 	}
 
 	return bannerData, nil
+}
+
+func makeanewcookie(w http.ResponseWriter) {
+	emptycookie := CookieData{
+		Manufacturer: map[string]int{},
+		Category:     map[string]int{},
+	}
+	mashaledJson, err := json.Marshal(emptycookie)
+	if err != nil {
+		fmt.Println("Error unmarshaling cookie:", err)
+	}
+
+	encodedCookieValue := base64.StdEncoding.EncodeToString([]byte(mashaledJson))
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  "searchData",
+		Value: encodedCookieValue,
+		Path:  "/",
+	})
+}
+
+func getBannerdataFromCookie(w http.ResponseWriter, cookie *http.Cookie) ProcessedModel {
+	var bannerData ProcessedModel
+
+	decodedcookievalue, err := base64.StdEncoding.DecodeString(cookie.Value)
+	if err != nil {
+		http.Error(w, "Error parsing data", http.StatusBadRequest)
+	}
+
+	var Cookiedata CookieData
+	if err := json.Unmarshal([]byte(string(decodedcookievalue)), &Cookiedata); err != nil {
+		http.Error(w, "Error parsing data", http.StatusBadRequest)
+	}
+	mostSearchedManufacturer, manufacturerSearchnum := maxCookiedataKey(Cookiedata.Manufacturer)
+	mostSearchedCategory, categorySearchnum := maxCookiedataKey(Cookiedata.Category)
+
+	bannerData, err = findMostSearchedData(mostSearchedManufacturer, mostSearchedCategory, manufacturerSearchnum, categorySearchnum)
+	if err != nil {
+		http.Error(w, "Error findMostSearchedData", http.StatusBadRequest)
+	}
+
+	return bannerData
+
 }

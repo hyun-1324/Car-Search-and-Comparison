@@ -14,26 +14,37 @@ func popupHandler(w http.ResponseWriter, r *http.Request) {
 	carName := r.FormValue("specifications")
 	acarInfo := findacarinfobyname(carName)
 
+	addCookieFromAcarinfo(w, r, acarInfo)
+
+	tmp1 := template.Must(template.ParseFiles("popup.html"))
+	tmp1.Execute(w, acarInfo)
+
+}
+
+func findacarinfobyname(carName string) ProcessedModel {
+	var carinfo ProcessedModel
+	allCarsinfo, err := processedApiData()
+	if err != nil {
+		fmt.Println("Error parsing data")
+		return ProcessedModel{}
+	}
+
+	for _, model := range allCarsinfo {
+		if model.Name == carName {
+			carinfo = model
+		}
+	}
+
+	return carinfo
+}
+
+func addCookieFromAcarinfo(w http.ResponseWriter, r *http.Request, acarInfo ProcessedModel) {
 	cookie, err := r.Cookie("searchData")
 	if err == http.ErrNoCookie {
-		emptycookie := CookieData{
-			Manufacturer: map[string]int{},
-			Category:     map[string]int{},
-		}
-		mashaledJson, err := json.Marshal(emptycookie)
-		if err != nil {
-			fmt.Println("Error unmarshaling cookie:", err)
-		}
+		makeanewcookie(w)
 
-		encodedCookieValue := base64.StdEncoding.EncodeToString([]byte(mashaledJson))
+		cookie, _ = r.Cookie("searchData")
 
-		http.SetCookie(w, &http.Cookie{
-			Name:  "searchData",
-			Value: encodedCookieValue,
-			Path:  "/",
-		})
-
-		http.Error(w, "Error parsing data", http.StatusBadRequest)
 	}
 
 	decodedcookievalue, err := base64.StdEncoding.DecodeString(cookie.Value)
@@ -79,25 +90,4 @@ func popupHandler(w http.ResponseWriter, r *http.Request) {
 		Value: encodedJSON,
 		Path:  "/",
 	})
-
-	tmp1 := template.Must(template.ParseFiles("popup.html"))
-	tmp1.Execute(w, acarInfo)
-
-}
-
-func findacarinfobyname(carName string) ProcessedModel {
-	var carinfo ProcessedModel
-	allCarsinfo, err := processedApiData()
-	if err != nil {
-		fmt.Println("Error parsing data")
-		return ProcessedModel{}
-	}
-
-	for _, model := range allCarsinfo {
-		if model.Name == carName {
-			carinfo = model
-		}
-	}
-
-	return carinfo
 }
