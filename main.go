@@ -3,13 +3,16 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/hyun-1324/cars/handlers"
 )
 
 func main() {
-	http.HandleFunc("/", logAndRecoverHandler(mainHandler))
-	http.HandleFunc("/result", logAndRecoverHandler(resultHandler))
-	http.HandleFunc("/comparison", logAndRecoverHandler(comparisonHandler))
-	http.HandleFunc("/popup", logAndRecoverHandler(popupHandler))
+	http.HandleFunc("/", handlers.LogAndRecoverHandler(handlers.MainHandler))
+	http.HandleFunc("/result", handlers.LogAndRecoverHandler(handlers.ResultHandler))
+	http.HandleFunc("/comparison", handlers.LogAndRecoverHandler(handlers.ComparisonHandler))
+	http.HandleFunc("/popup", handlers.LogAndRecoverHandler(handlers.PopupHandler))
+	http.HandleFunc("/download_txt", handlers.LogAndRecoverHandler(handlers.DownloadTxt))
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 

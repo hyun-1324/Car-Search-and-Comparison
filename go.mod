@@ -1,3 +1,3 @@
-module github.com/hyun-1324/Car_search_and_comparison
+module github.com/hyun-1324/cars
 
 go 1.22.1
