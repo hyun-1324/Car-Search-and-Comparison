@@ -72,7 +72,6 @@ type ProcessedModel struct {
 // Converts API data to a processed format used in this project.
 func ProcessedApiData() ([]ProcessedModel, error) {
 	var wg sync.WaitGroup
-	results := make(chan []ProcessedModel)
 	errors := make(chan error)
 
 	var models []ModelApi
@@ -110,7 +109,6 @@ func ProcessedApiData() ([]ProcessedModel, error) {
 
 	go func() {
 		wg.Wait()
-		close(results)
 		close(errors)
 	}()
 
