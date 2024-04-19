@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/hyun-1324/cars/handlers"
+	"cars/handlers"
 )
 
 func main() {

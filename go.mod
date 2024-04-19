@@ -1,3 +1,3 @@
-module github.com/hyun-1324/cars
+module cars
 
 go 1.22.1
