@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Danny & Veera">
+    <meta name="description" content="Cars viewer is a tool to search, view and compare information about cars">
+    <title>Search results</title>
+    <link rel="stylesheet" href="static/cars_viewer.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="static/favicon/site.webmanifest">
+</head>
+<body>
+    <header>
+        <pre>CARS VIEWER    🚗  🚙  🛻  💨</pre> 
+    </header>
+    <main>
+        <div class="containerInline">
+            <h2>Search results</h2>
+            {{if .}}
+            <table>
+                <tr>
+                    <th>Image</th>
+                    <th>Basic information</th>
+                    <th>Specifications</th>
+                    <th>Pick for Comparison</th>
+                </tr>
+                {{range .}}
+                <tr>
+                    <td>
+                        <img src="http://localhost:3000/api/images/{{.Image}}" alt="image of a car" width="250px">
+                    </td>
+                    <td>
+                        <p>{{.Name}}</p>
+                        <p>Manufacturer: {{.ManufacturerName}}</p>
+                        <p>Category: {{.CategoryName}}</p>
+                        <p>Production year: {{.Year}}</p>
+                    </td>
+                    <td>
+                        <form action="/popup" method="post" target="_blank">
+                            <button class="button" name="specifications" type="submit" value="{{.Name}}">Specifications</button>
+                        </form>
+                    </td>
+                    <td>
+                       <input class="largeCheck" form="comparison" type="checkbox" id="carModel" name="carmodelName" value="{{.Name}}"> 
+                    </td>
+                </tr>
+                {{end}}
+            </table>
+            {{else}}
+            <p>There is nothing to show here. 😔</p>
+            <p>Try again by picking a preference in home page before searching.</p> 
+            <p>Find your way back there by pressing Home-button.</p>
+            {{end}}
+        </div>
+        <div class="containerInline">
+           <form action="/" method="GET" >
+                <button class="button" type="submit">Home</button>
+            </form> 
+            <br>
+            <form id="comparison" action="/comparison" method="post" target="_blank">
+                <button class="button" type="submit">Compare</button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>Important notice! 🍪 This website uses cookies to track your preferences.</p>
+    </footer>
+</body>
+</html>

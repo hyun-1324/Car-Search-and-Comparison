@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Danny & Veera">
+    <meta name="description" content="Cars viewer is a tool to search, view and compare information about cars">
+    <title>Specifications</title>
+    <link rel="stylesheet" href="static/cars_viewer.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="static/favicon/site.webmanifest">
+</head>
+<body>
+    <header>
+        <pre>CARS VIEWER    🚗  🚙  🛻  💨</pre> 
+    </header>
+    <main>
+        <div class="containerInline">
+            <div>
+                <h2>{{.Name}}</h2>
+            </div>
+            <div>
+                <img src="http://localhost:3000/api/images/{{.Image}}" alt="image of a car" width="400px">
+            </div>
+            <table class="specTable">
+                <tr>
+                    <th>Basic information:</th>
+                <tr>
+                    <td>
+                        <p>Category: {{.CategoryName}}</p>
+                        <p>Production year: {{.Year}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Manufacturer's information:</th>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Manufacturer: {{.ManufacturerName}}</p>
+                        <p>Home country: {{.ManufacturerCountry}}</p>
+                        <p>Founding year: {{.ManufacturerFoundingYear}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Specifications:</th>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Engine: {{.Specifications.Engine}}</p>
+                        <p>Horsepower: {{.Specifications.Horsepower}}</p>
+                        <p>Transmission: {{.Specifications.Transmission}}</p>
+                        <p>Drivetrain: {{.Specifications.Drivetrain}}</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="containerInline">
+            <form action="/download_txt" method="post">
+                <p>Download this car's information as a text file:</p>
+                <button class="button" name="downloadtxt" type="submit" value="{{.Name}}">Download text file</button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>Important notice! 🍪 This website uses cookies to track your preferences.</p>
+    </footer>
+</body>
+</html>

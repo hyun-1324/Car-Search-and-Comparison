@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Danny & Veera">
+    <meta name="description" content="Cars viewer is a tool to search, view and compare information about cars">
+    <title>Comparison</title>
+    <link rel="stylesheet" href="static/cars_viewer.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="static/favicon/site.webmanifest">
+</head>
+<body>
+    <header>
+        <pre>CARS VIEWER    🚗  🚙  🛻  💨</pre> 
+    </header>
+    <main>
+        <div class="container">
+            {{if .}}
+            <table class="specTable">
+                <tr>
+                    <th>Model</th>
+                    <th>Image</th>
+                    <th>Manufacturer</th>
+                    <th>Category</th>
+                    <th>Production year</th>
+                    <th>Engine</th>
+                    <th>Horsepower</th>
+                    <th>Transmission</th>
+                    <th>Drivetrain</th>
+                </tr>
+                {{range .}}
+                <tr>
+                    <td>{{.Name}}</td>
+                    <td>
+                        <img src="http://localhost:3000/api/images/{{.Image}}" alt="image of a car" height="150px">
+                    </td>
+                    <td>{{.ManufacturerName}}</td>
+                    <td>{{.CategoryName}}</td>
+                    <td>{{.Year}}</td>
+                    <td>{{.Specifications.Engine}}</td>
+                    <td>{{.Specifications.Horsepower}}</td>
+                    <td>{{.Specifications.Transmission}}</td>
+                    <td>{{.Specifications.Drivetrain}}</td>
+                </tr>
+                {{end}}
+            </table>
+            {{else}}
+            <p>There is nothing to show here. 😔</p>
+            <p>Try again by picking some cars in search result page before comparing.</p> 
+            <p>Find your way back there by closing this tab.</p>
+            {{end}}
+        </div>
+    </main>
+    <footer>
+        <p>Important notice! 🍪 This website uses cookies to track your preferences.</p>
+    </footer>
+</body>
+</html>

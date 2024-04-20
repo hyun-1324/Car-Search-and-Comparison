@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Danny & Veera">
+    <meta name="description" content="Cars viewer is a tool to search, view and compare information about cars">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars viewer</title>
+    <link rel="stylesheet" href="static/cars_viewer.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="static/favicon/site.webmanifest">
+</head>
+<body>
+    <header>
+        <pre>CARS VIEWER    🚗  🚙  🛻  💨</pre> 
+    </header>
+    <main>
+        <div class="container">
+            <form action="/result" method="POST">
+                <p>Find cars by choosing at least one of your preferences:</p>
+                <label for="manufacturer">Choose manufacturer:</label>
+                <select name="manufacturer" id="manufacturer">
+                    <option value="empty">---</option>
+                    {{range .Manufacturers}}
+                    <option>{{.}}</option>
+                    {{ end }}
+                </select>
+                <br><br/>
+                <label for="category">Choose category:</label>
+                <select name="category" id="category">
+                    <option value="empty">---</option>
+                    {{range .Categories}}
+                    <option>{{.}}</option>
+                    {{ end }}
+                </select> 
+                <br><br/>
+                <input class="button" type="submit" value="Search">
+            </form>
+        </div>
+        <div class="container">
+            <p>You might also like this car:</p>
+            <table class="bannerTable">
+                <tr>
+                    <td>
+                        <img src="http://localhost:3000/api/images/{{.Banner.Image}}" alt="image of a car" width="250px">
+                    </td>
+                    <td>
+                        <p>{{.Banner.Name}}</p>
+                    </td>
+                    <td>
+                        <form action="/popup" method="post" target="_blank">
+                            <button class="button" name="specifications" type="submit" value="{{.Banner.Name}}">See specifications</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <p>Important notice! 🍪 This website uses cookies to track your preferences.</p>
+    </footer>
+</body>
+</html>
